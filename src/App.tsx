@@ -1,24 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useCallback } from 'react';
 import './App.css';
 
+const Heading = ({ title }: { title: string }) => <h2>{title}</h2>
+
+const Box = ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+
+interface ListItem {
+  items: string[],
+  listClick?: (item: string) => void
+}
+
+const List: React.FunctionComponent<ListItem> = ({ items, listClick }) => {
+  return <ul>
+    {
+      items.map((item, index) => <li onClick={() => listClick?.(item)} key={index}>{item}</li>)
+    }
+  </ul>
+}
+
 function App() {
+  const handleListClick = useCallback((item: string) => {
+    console.log(item)
+  }, [])
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Heading title="introduction" />
+      <Box>
+        Hello there
+      </Box>
+      <List items={["one", "two"]} listClick={handleListClick} />
     </div>
   );
 }
