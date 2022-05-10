@@ -1,9 +1,28 @@
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
+import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import './App.css';
 
 const Heading = ({ title }: { title: string }) => <h2>{title}</h2>
 
 const Box = ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+
+const useNumber = (initialValue: number) => useState<number>(initialValue);
+
+type UseNumberValue = ReturnType<typeof useNumber>[0]
+type UseNumberSetValue = ReturnType<typeof useNumber>[1]
+
+const Button: React.FunctionComponent<
+  React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & { title?: string }> = ({ title, children, style, ...rest }) => (
+    <button {...rest} style={{ ...style, backgroundColor: "green", color: 'white', fontSize: 'large' }}>{title ?? children}</button>
+  )
+
+const Increment: React.FunctionComponent<{
+  value: UseNumberValue,
+  setValue: UseNumberSetValue
+}> = ({ value, setValue }) => {
+  return <Button onClick={() => setValue(value + 1)} title={`Add - ${value}`}></Button>
+}
+
+
 
 interface ListItem {
   items: string[],
@@ -78,6 +97,8 @@ function App() {
     }
   }
 
+  const [value, setValue] = useNumber(0);
+
   return (
     <div className="App">
       <Heading title="introduction" />
@@ -86,21 +107,22 @@ function App() {
       </Box>
       <List items={["one", "two"]} listClick={handleListClick} />
       <Box>{JSON.stringify(payload)}</Box>
+      <Increment value={value} setValue={setValue} />
       <Heading title="Todos" />
       {
         todos.map(({ id, text, done }) => (
           <div key={id}>
             {text}
-            <button onClick={() => dispatch({
+            <Button onClick={() => dispatch({
               type: 'REMOVE',
               id: id
-            })}>Remove</button>
+            })}>Remove</Button>
           </div>
         ))
       }
       <div>
         <input type="text" ref={newTodoRef} />
-        <button onClick={addNewTodo}>Add</button>
+        <Button onClick={addNewTodo}>Add</Button>
       </div>
     </div>
   );
